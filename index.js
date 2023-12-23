@@ -1,6 +1,7 @@
 require("dotenv").config();
 const cjpy = require("./cjpy");
-const discordBotRun = require("./commands/discord-bot");
+//const discordBotRun = require("./commands/discord-bot");
+const discordBotRun = require("./test");
 const express = require("express");
 const app = express();
 
