@@ -13,7 +13,7 @@ function formatYen(value) {
 
 const discordBotRun = () => {
   console.log(`executing discordBotRun`);
-  const yamatoInfoBotClient = new Client({
+  const yamatoCollateralBotClient = new Client({
     intents: [
       GatewayIntentBits.Guilds,
       GatewayIntentBits.GuildMembers,
@@ -44,14 +44,19 @@ const discordBotRun = () => {
     ],
   })
   
-  yamatoInfoBotClient.on("ready", async () => {
+  yamatoCollateralBotClient.on("ready", async () => {
     setInterval(async () => {
       try {
-        const guild = yamatoInfoBotClient.guilds.cache.get(
+        const guild = yamatoCollateralBotClient.guilds.cache.get(
           process.env.DISCORD_CHANNEL_ID
         );
+        // Check if guild is available before fetching members
+        if (!guild) {
+          console.error("Guild not found.");
+          return;
+        }
         const bot = await guild.members.fetch(
-          process.env.DISCORD_YAMATO_INFO_BOT_ID
+          process.env.DISCORD_YAMATO_COLLATERAL_BOT_ID
         );
         const ABI = require("./../abi/Yamato.json");
         const YAMATOcontract = new ethers.Contract(
@@ -67,7 +72,7 @@ const discordBotRun = () => {
 
         const totalSupplyCJPY = allYamatoStates[1] / 10 ** 18;
         console.log(totalSupplyCJPY.toLocaleString());
-        await yamatoInfoBotClient.user.setActivity(`総発行: ${totalSupplyCJPY.toLocaleString()} CJPY`);
+        await yamatoCollateralBotClient.user.setActivity(`総発行: ${totalSupplyCJPY.toLocaleString()} CJPY`);
 
       } catch (err) {
         console.log(err.name + ": " + err.message);
@@ -75,7 +80,7 @@ const discordBotRun = () => {
     }, intervalTime);
   });
 
-  const yamatoInfoBot2Client = new Client({
+  const yamatoTcrBotClient = new Client({
     intents: [
       GatewayIntentBits.Guilds,
       GatewayIntentBits.GuildMembers,
@@ -106,14 +111,14 @@ const discordBotRun = () => {
     ],
   })
 
-  yamatoInfoBot2Client.on("ready", async () => {
+  yamatoTcrBotClient.on("ready", async () => {
     setInterval(async () => {
       try {
-        const guild = yamatoInfoBot2Client.guilds.cache.get(
+        const guild = yamatoTcrBotClient.guilds.cache.get(
           process.env.DISCORD_CHANNEL_ID
         );
         const bot = await guild.members.fetch(
-          process.env.DISCORD_YAMATO_INFO_BOT2_ID
+          process.env.DISCORD_YAMATO_TCR_BOT_ID
         );
         const ABI = require("./../abi/PriorityRegistryV6.json");
         const PriorityRegistryV6contract = new ethers.Contract(
@@ -153,7 +158,7 @@ const discordBotRun = () => {
         if(redeemablesCandidate !== 0) redeemablesCandidate = redeemablesCandidate / 10 ** 18;
         console.log('culculated: ' + redeemablesCandidate);
 
-        await yamatoInfoBot2Client.user.setActivity(`償還候補: ${redeemablesCandidate} CJPY`);
+        await yamatoTcrBotClient.user.setActivity(`償還候補: ${redeemablesCandidate} CJPY`);
 
         // tcr:
         // mockState.totalDebt > 0
@@ -172,7 +177,7 @@ const discordBotRun = () => {
     }, intervalTime);
   });
 
-  const yamatoInfoBot3Client = new Client({
+  const yamatoExchangerateBotClient = new Client({
     intents: [
       GatewayIntentBits.Guilds,
       GatewayIntentBits.GuildMembers,
@@ -203,14 +208,14 @@ const discordBotRun = () => {
     ],
   })
 
-  yamatoInfoBot3Client.on("ready", async () => {
+  yamatoExchangerateBotClient.on("ready", async () => {
     setInterval(async () => {
       try {
-        const guild = yamatoInfoBot3Client.guilds.cache.get(
+        const guild = yamatoExchangerateBotClient.guilds.cache.get(
           process.env.DISCORD_CHANNEL_ID
         );
         const bot = await guild.members.fetch(
-          process.env.DISCORD_YAMATO_INFO_BOT3_ID
+          process.env.DISCORD_YAMATO_EXCHANGERATE_BOT_ID
         );
 
         const res = await fetch(
@@ -246,7 +251,7 @@ const discordBotRun = () => {
           await bot.setNickname(`為替差異: ${diff}%`);
         }
 
-        await yamatoInfoBot3Client.user.setActivity(`円: ${jpyPerUSDToFixed}・CJPY: ${cjpyPerUSDToFixed}`);
+        await yamatoExchangerateBotClient.user.setActivity(`円: ${jpyPerUSDToFixed}・CJPY: ${cjpyPerUSDToFixed}`);
 
         // await bot.setNickname(`円: ${jpyPerUSDToFixed} CJPY: ${cjpyPerUSDToFixed}`);
         // await yamatoInfoBot3Client.user.setActivity(`為替差異: ${diff}`);
@@ -257,9 +262,9 @@ const discordBotRun = () => {
     }, intervalTime);
   });
 
-  yamatoInfoBotClient.login(process.env.DISCORD_YAMATO_INFO_BOT_TOKEN);
-  yamatoInfoBot2Client.login(process.env.DISCORD_YAMATO_INFO_BOT2_TOKEN);
-  yamatoInfoBot3Client.login(process.env.DISCORD_YAMATO_INFO_BOT3_TOKEN);
+  yamatoCollateralBotClient.login(process.env.DISCORD_YAMATO_COLLATERAL_BOT_TOKEN);
+  //yamatoTcrBotClient.login(process.env.DISCORD_YAMATO_TCR_BOT_TOKEN);
+  //yamatoExchangerateBotClient.login(process.env.DISCORD_YAMATO_EXCHANGERATE_BOT_TOKEN);
 };
 
 module.exports = discordBotRun;
