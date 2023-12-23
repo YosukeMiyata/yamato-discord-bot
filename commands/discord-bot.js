@@ -262,9 +262,62 @@ const discordBotRun = () => {
     }, intervalTime);
   });
 
-  yamatoCollateralBotClient.login(process.env.DISCORD_YAMATO_COLLATERAL_BOT_TOKEN);
+  const yamatoTestBotClient = new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      
+    ],
+    partials: [
+      Partials.User,
+      Partials.Channel,
+      Partials.GuildMember,
+      Partials.Message,
+      Partials.Reaction,
+      Partials.GuildScheduledEvent,
+      Partials.ThreadMember,
+    ],
+  })
+  
+  yamatoTestBotClient.on("ready", async () => {
+    setInterval(async () => {
+      try {
+        const guild = yamatoTestBotClient.guilds.cache.get(
+          1135794021185355838
+        );
+        // Check if guild is available before fetching members
+        if (!guild) {
+          console.error("Guild not found.");
+          return;
+        }
+        const bot = await guild.members.fetch(
+          process.env.DISCORD_TEST_BOT_ID
+        );
+        const ABI = require("./../abi/Yamato.json");
+        const YAMATOcontract = new ethers.Contract(
+          "0x02Fe72b2E9fF717EbF3049333B184E9Cd984f257", //Yamato contract address
+          ABI,
+          provider
+        );
+        const allYamatoStates = await YAMATOcontract.getStates();
+        
+        const totalCollateralETH = allYamatoStates[0] / 10 ** 18;
+        console.log(totalCollateralETH);
+        await bot.setNickname(`総担保 : Ξ ${totalCollateralETH} ETH`);
+
+        const totalSupplyCJPY = allYamatoStates[1] / 10 ** 18;
+        console.log(totalSupplyCJPY.toLocaleString());
+        await yamatoTestBotClient.user.setActivity(`総発行: ${totalSupplyCJPY.toLocaleString()} CJPY`);
+
+      } catch (err) {
+        console.log(err.name + ": " + err.message);
+      }
+    }, intervalTime);
+  });
+
+  //yamatoCollateralBotClient.login(process.env.DISCORD_YAMATO_COLLATERAL_BOT_TOKEN);
   //yamatoTcrBotClient.login(process.env.DISCORD_YAMATO_TCR_BOT_TOKEN);
   //yamatoExchangerateBotClient.login(process.env.DISCORD_YAMATO_EXCHANGERATE_BOT_TOKEN);
+  yamatoTestBotClient.login(process.env.DISCORD_TEST_BOT_TOKEN);
 };
 
 module.exports = discordBotRun;
