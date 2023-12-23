@@ -282,7 +282,7 @@ const discordBotRun = () => {
     setInterval(async () => {
       try {
         const guild = yamatoTestBotClient.guilds.cache.get(
-          1135794021185355838
+          process.env.DISCORD_CHANNEL_ID
         );
         // Check if guild is available before fetching members
         if (!guild) {
@@ -314,8 +314,8 @@ const discordBotRun = () => {
     }, intervalTime);
   });
 
-  yamatoCollateralBotClient.login(process.env.DISCORD_YAMATO_COLLATERAL_BOT_TOKEN);
-  yamatoTcrBotClient.login(process.env.DISCORD_YAMATO_TCR_BOT_TOKEN);
+  //yamatoCollateralBotClient.login(process.env.DISCORD_YAMATO_COLLATERAL_BOT_TOKEN);
+  //yamatoTcrBotClient.login(process.env.DISCORD_YAMATO_TCR_BOT_TOKEN);
   yamatoExchangerateBotClient.login(process.env.DISCORD_YAMATO_EXCHANGERATE_BOT_TOKEN);
   //yamatoTestBotClient.login(process.env.DISCORD_TEST_BOT_TOKEN);
 };
