@@ -314,10 +314,10 @@ const discordBotRun = () => {
     }, intervalTime);
   });
 
-  //yamatoCollateralBotClient.login(process.env.DISCORD_YAMATO_COLLATERAL_BOT_TOKEN);
-  //yamatoTcrBotClient.login(process.env.DISCORD_YAMATO_TCR_BOT_TOKEN);
-  //yamatoExchangerateBotClient.login(process.env.DISCORD_YAMATO_EXCHANGERATE_BOT_TOKEN);
-  yamatoTestBotClient.login(process.env.DISCORD_TEST_BOT_TOKEN);
+  yamatoCollateralBotClient.login(process.env.DISCORD_YAMATO_COLLATERAL_BOT_TOKEN);
+  yamatoTcrBotClient.login(process.env.DISCORD_YAMATO_TCR_BOT_TOKEN);
+  yamatoExchangerateBotClient.login(process.env.DISCORD_YAMATO_EXCHANGERATE_BOT_TOKEN);
+  //yamatoTestBotClient.login(process.env.DISCORD_TEST_BOT_TOKEN);
 };
 
 module.exports = discordBotRun;

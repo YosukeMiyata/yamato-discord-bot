@@ -1,7 +1,8 @@
 require("dotenv").config();
 const cjpy = require("./cjpy");
-//const discordBotRun = require("./commands/discord-bot");
-const discordBotRun = require("./test");
+const discordBotRun = require("./commands/discord-bot");
+//const yamatoExchangerateRun = require("./exchangerate.js");
+//const discordBotRun = require("./test");
 const express = require("express");
 const app = express();
 
@@ -14,6 +15,7 @@ app.listen(PORT, () => {
 });
 
 discordBotRun();
+//yamatoExchangerateRun();
 
 /*// hey.jsのmodule.exportsを呼び出します。
 const heyFile = require('./commands/hey.js');
