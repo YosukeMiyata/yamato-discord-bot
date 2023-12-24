@@ -217,16 +217,34 @@ const discordBotRun = () => {
         const bot = await guild.members.fetch(
           process.env.DISCORD_YAMATO_EXCHANGERATE_BOT_ID
         );
-
-        const res = await fetch(
-          "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=JPY&apikey=GZWY0Y5XMJ7WM66A"
+        const ABI = require("./../abi/JPYUSD.json");
+        const JPYUSDcontract = new ethers.Contract(
+          "0xbce206cae7f0ec07b545edde332a47c2f75bbeb3", // JPY/USD|Chainlink contract address
+          ABI,
+          provider
         );
-        const resJSON = await res.json();
-        const jpyPerUSD = resJSON['Realtime Currency Exchange Rate']['5. Exchange Rate'];
-        const jpyPerUSDToFixed = Number(jpyPerUSD).toFixed(2);
-        console.log(jpyPerUSDToFixed);
+        const res = await JPYUSDcontract.latestRoundData();
+        console.log('res.roundId = '+ res.roundId);
+        console.log('res.answer = '+ res.answer);
+        console.log('res.startedAt = '+ res.startedAt);
+        console.log('res.updatedAt  = '+ res.updatedAt );
+        console.log('res.answeredInRound = '+ res.answeredInRound);
 
-        //await bot.setNickname(`1ドル = ${jpyPerUSDToFixed}円`);
+        const resUSDPerJPY = res.answer;
+
+        const jpyPerUSDToFixed = (10 ** 8 / resUSDPerJPY).toFixed(2);
+
+        console.log('1ドル = '+ jpyPerUSDToFixed);
+
+        // const res = await fetch(
+        //   "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=JPY&apikey=GZWY0Y5XMJ7WM66A"
+        // );
+        // const resJSON = await res.json();
+        // const jpyPerUSD = resJSON['Realtime Currency Exchange Rate']['5. Exchange Rate'];
+        // const jpyPerUSDToFixed = Number(jpyPerUSD).toFixed(2);
+        // console.log(jpyPerUSDToFixed);
+
+        // await bot.setNickname(`1ドル = ${jpyPerUSDToFixed}円`);
 
         const res2 = await fetch(
           "https://api.coingecko.com/api/v3/simple/price?ids=convertible-jpy-token&vs_currencies=jpy"
@@ -262,57 +280,56 @@ const discordBotRun = () => {
     }, intervalTime);
   });
 
-  const yamatoTestBotClient = new Client({
-    intents: [
-      GatewayIntentBits.Guilds,
+  // const yamatoTestBotClient = new Client({
+  //   intents: [
+  //     GatewayIntentBits.Guilds,
       
-    ],
-    partials: [
-      Partials.User,
-      Partials.Channel,
-      Partials.GuildMember,
-      Partials.Message,
-      Partials.Reaction,
-      Partials.GuildScheduledEvent,
-      Partials.ThreadMember,
-    ],
-  })
+  //   ],
+  //   partials: [
+  //     Partials.User,
+  //     Partials.Channel,
+  //     Partials.GuildMember,
+  //     Partials.Message,
+  //     Partials.Reaction,
+  //     Partials.GuildScheduledEvent,
+  //     Partials.ThreadMember,
+  //   ],
+  // })
   
-  yamatoTestBotClient.on("ready", async () => {
-    setInterval(async () => {
-      try {
-        const guild = yamatoTestBotClient.guilds.cache.get(
-          process.env.DISCORD_CHANNEL_ID
-        );
-        // Check if guild is available before fetching members
-        if (!guild) {
-          console.error("Guild not found.");
-          return;
-        }
-        const bot = await guild.members.fetch(
-          process.env.DISCORD_TEST_BOT_ID
-        );
-        const ABI = require("./../abi/Yamato.json");
-        const YAMATOcontract = new ethers.Contract(
-          "0x02Fe72b2E9fF717EbF3049333B184E9Cd984f257", //Yamato contract address
-          ABI,
-          provider
-        );
-        const allYamatoStates = await YAMATOcontract.getStates();
+  // yamatoTestBotClient.on("ready", async () => {
+  //   setInterval(async () => {
+  //     try {
+  //       const guild = yamatoTestBotClient.guilds.cache.get(
+  //         process.env.DISCORD_CHANNEL_ID
+  //       );
+  //       if (!guild) {
+  //         console.error("Guild not found.");
+  //         return;
+  //       }
+  //       const bot = await guild.members.fetch(
+  //         process.env.DISCORD_TEST_BOT_ID
+  //       );
+  //       const ABI = require("./../abi/Yamato.json");
+  //       const YAMATOcontract = new ethers.Contract(
+  //         "0x02Fe72b2E9fF717EbF3049333B184E9Cd984f257", //Yamato contract address
+  //         ABI,
+  //         provider
+  //       );
+  //       const allYamatoStates = await YAMATOcontract.getStates();
         
-        const totalCollateralETH = allYamatoStates[0] / 10 ** 18;
-        console.log(totalCollateralETH);
-        await bot.setNickname(`総担保 : Ξ ${totalCollateralETH} ETH`);
+  //       const totalCollateralETH = allYamatoStates[0] / 10 ** 18;
+  //       console.log(totalCollateralETH);
+  //       await bot.setNickname(`総担保 : Ξ ${totalCollateralETH} ETH`);
 
-        const totalSupplyCJPY = allYamatoStates[1] / 10 ** 18;
-        console.log(totalSupplyCJPY.toLocaleString());
-        await yamatoTestBotClient.user.setActivity(`総発行: ${totalSupplyCJPY.toLocaleString()} CJPY`);
+  //       const totalSupplyCJPY = allYamatoStates[1] / 10 ** 18;
+  //       console.log(totalSupplyCJPY.toLocaleString());
+  //       await yamatoTestBotClient.user.setActivity(`総発行: ${totalSupplyCJPY.toLocaleString()} CJPY`);
 
-      } catch (err) {
-        console.log(err.name + ": " + err.message);
-      }
-    }, intervalTime);
-  });
+  //     } catch (err) {
+  //       console.log(err.name + ": " + err.message);
+  //     }
+  //   }, intervalTime);
+  // });
 
   //yamatoCollateralBotClient.login(process.env.DISCORD_YAMATO_COLLATERAL_BOT_TOKEN);
   //yamatoTcrBotClient.login(process.env.DISCORD_YAMATO_TCR_BOT_TOKEN);
