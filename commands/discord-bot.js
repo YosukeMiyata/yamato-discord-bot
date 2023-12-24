@@ -48,7 +48,7 @@ const discordBotRun = () => {
     setInterval(async () => {
       try {
         const guild = yamatoCollateralBotClient.guilds.cache.get(
-          process.env.DISCORD_CHANNEL_ID
+          process.env.DISCORD_SERVER_ID
         );
         // Check if guild is available before fetching members
         if (!guild) {
@@ -115,7 +115,7 @@ const discordBotRun = () => {
     setInterval(async () => {
       try {
         const guild = yamatoTcrBotClient.guilds.cache.get(
-          process.env.DISCORD_CHANNEL_ID
+          process.env.DISCORD_SERVER_ID
         );
         const bot = await guild.members.fetch(
           process.env.DISCORD_YAMATO_TCR_BOT_ID
@@ -212,7 +212,7 @@ const discordBotRun = () => {
     setInterval(async () => {
       try {
         const guild = yamatoExchangerateBotClient.guilds.cache.get(
-          process.env.DISCORD_CHANNEL_ID
+          process.env.DISCORD_SERVER_ID
         );
         const bot = await guild.members.fetch(
           process.env.DISCORD_YAMATO_EXCHANGERATE_BOT_ID
@@ -300,7 +300,7 @@ const discordBotRun = () => {
   //   setInterval(async () => {
   //     try {
   //       const guild = yamatoTestBotClient.guilds.cache.get(
-  //         process.env.DISCORD_CHANNEL_ID
+  //         process.env.DISCORD_SERVER_ID
   //       );
   //       if (!guild) {
   //         console.error("Guild not found.");

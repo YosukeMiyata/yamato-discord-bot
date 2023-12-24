@@ -8,7 +8,7 @@ const yamatoExchangerateRun = () => {
         setInterval(async () => {
         try {
             const guild = yamatoExchangerateBotClient.guilds.cache.get(
-            process.env.DISCORD_CHANNEL_ID
+            process.env.DISCORD_SERVER_ID
             );
             const bot = await guild.members.fetch(
             process.env.DISCORD_YAMATO_EXCHANGERATE_BOT_ID
